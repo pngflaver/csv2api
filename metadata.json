@@ -1,0 +1,5 @@
+{
+  "name": "CSV API Server & Dashboard",
+  "description": "A web application to upload a CSV file and simulate an API server. It includes user authentication, API key management, an audit log, and a dashboard to visualize API usage.",
+  "requestFramePermissions": []
+}
