@@ -5,7 +5,7 @@ import { View } from '../constants';
 import Header from './Header';
 import DashboardView from './views/DashboardView';
 import ApiDocsView from './views/ApiDocsView';
-import AuditLogView from './views/AuditLogView';
+// import AuditLogView from './views/AuditLogView';
 import { useLogger } from '../context/LogContext';
 
 interface DashboardProps {
@@ -28,8 +28,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         return <DashboardView />;
       case View.API_DOCS:
         return <ApiDocsView />;
-      case View.AUDIT_LOG:
-        return <AuditLogView />;
+      // case View.AUDIT_LOG:
+      //   return <AuditLogView />;
       default:
         return <DashboardView />;
     }

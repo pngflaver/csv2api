@@ -39,7 +39,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, setView, currentView })
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-              <h1 className="text-xl font-bold text-indigo-600 dark:text-indigo-400">API Dashboard</h1>
+              <h1 className="text-xl font-bold text-indigo-600 dark:text-indigo-400">Midnight Bridge v1.0.0</h1>
             </div>
             <nav className="hidden md:flex items-center space-x-4">
               <NavItem
@@ -54,12 +54,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, setView, currentView })
                 isActive={currentView === View.API_DOCS}
                 onClick={() => setView(View.API_DOCS)}
               />
-              <NavItem
-                icon={ShieldCheckIcon}
-                label="Audit Log"
-                isActive={currentView === View.AUDIT_LOG}
-                onClick={() => setView(View.AUDIT_LOG)}
-              />
+              {/* Audit Log nav removed */}
             </nav>
             <div className="flex items-center">
               <span className="text-gray-700 dark:text-gray-300 mr-3 hidden sm:block">

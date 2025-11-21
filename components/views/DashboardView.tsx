@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { useApi } from '../../context/ApiContext';
 import { useLogger } from '../../context/LogContext';
 import CsvUploader from '../CsvUploader';
 import UsageChart from '../UsageChart';
+import ApiLogTable from '../ApiLogTable';
 import { ArrowDownTrayIcon, KeyIcon, CodeBracketIcon } from '@heroicons/react/24/outline';
 
 const StatCard: React.FC<{ title: string; value: string | number; icon: React.ElementType }> = ({ title, value, icon: Icon }) => (
@@ -19,11 +19,11 @@ const StatCard: React.FC<{ title: string; value: string | number; icon: React.El
 );
 
 const DashboardView: React.FC = () => {
-  const { csvData, apiKey } = useApi();
+  const { csvData, apiKey, csvFileInfo, serverStatus } = useApi() as any;
   const { logs } = useLogger();
 
   const apiCalls = logs.filter(log => log.action.startsWith('API_CALL')).length;
-  const dataRows = csvData ? csvData.length : 0;
+  const dataRows = serverStatus && serverStatus.hasData ? (serverStatus.metadata && serverStatus.metadata.rows ? serverStatus.metadata.rows : (csvData ? csvData.length : 0)) : (csvData ? csvData.length : 0);
 
   return (
     <div className="space-y-6">
@@ -39,9 +39,20 @@ const DashboardView: React.FC = () => {
           <div style={{ height: '300px' }}>
             <UsageChart />
           </div>
+          {/* API Log Table below the usage graph */}
+          <ApiLogTable />
         </div>
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Data Management</h2>
+          <div className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            <p>Server data table: <span className="font-medium">{serverStatus && serverStatus.hasData ? 'Populated' : 'Empty'}</span></p>
+            {serverStatus && serverStatus.metadata && (
+              <>
+                <p>File: <span className="font-medium">{serverStatus.metadata.fileName}</span></p>
+                <p>Uploaded: <span className="font-medium">{new Date(serverStatus.metadata.uploadedAt).toLocaleString()}</span></p>
+              </>
+            )}
+          </div>
           <CsvUploader />
         </div>
       </div>

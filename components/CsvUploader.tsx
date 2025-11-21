@@ -4,8 +4,9 @@ import { useApi } from '../context/ApiContext';
 import { CsvData } from '../types';
 
 const CsvUploader: React.FC = () => {
-  const { loadCsvData, csvData, csvFileInfo, clearCsvData } = useApi();
+  const { loadCsvData, csvData, csvFileInfo, clearCsvData, uploadCsvToServer, apiKey } = useApi();
   const [error, setError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const parseCsv = (csvText: string): CsvData | null => {
     const lines = csvText.trim().split(/\r?\n/);
@@ -60,6 +61,8 @@ const CsvUploader: React.FC = () => {
     setError(null);
   }
 
+  // Disable upload input if server is not accepting uploads (i.e., when only lookup is allowed)
+
   return (
     <div className="space-y-4">
       {csvData && csvFileInfo ? (
@@ -74,6 +77,23 @@ const CsvUploader: React.FC = () => {
            <button onClick={handleClearData} className="mt-4 w-full text-sm bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600">
                 Clear Data & Upload New
             </button>
+          {uploadCsvToServer && apiKey && (
+            <button
+              onClick={async () => {
+                if (!csvData) return;
+                setUploading(true);
+                try {
+                  await uploadCsvToServer(csvData);
+                } finally {
+                  setUploading(false);
+                }
+              }}
+              disabled={uploading}
+              className="mt-2 w-full text-sm bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 disabled:opacity-60"
+            >
+              {uploading ? 'Uploading…' : 'Upload To Server'}
+            </button>
+          )}
         </div>
       ) : (
         <>

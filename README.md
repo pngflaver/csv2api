@@ -1,67 +1,133 @@
+## Security Measures
+
+This project includes several security features to protect your data and API:
+
+- **Password Hashing:** Admin password is securely hashed using bcrypt and stored in `server/chest.txt`. Password changes are persistent and never stored in plain text.
+- **API Key Management:** All sensitive endpoints require an API key or lookup key. Keys can be rotated and are stored on disk.
+- **Authentication:** Only the admin user (`bruce`) can log in and change the password. Login and password change endpoints require correct credentials.
+- **Rate Limiting:** The `/api/lookup` endpoint is rate-limited per IP (5 requests per minute) to prevent abuse.
+- **Audit Logging:** All API requests are logged with timestamp, IP, user agent, and masked token for traceability.
+- **Error Handling:** All errors return JSON with appropriate status codes; stack traces are only shown in development or server logs.
+- **Token Masking:** API tokens are masked in logs to avoid leaking secrets.
+
+See [`APIFunctions.md`](./APIFunctions.md) for endpoint-specific security requirements.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # CSV API Server & Dashboard
 
-This is a comprehensive, client-side React application that simulates a backend API server for CSV data. It's built with TypeScript and styled with Tailwind CSS, providing a complete user experience from login to data visualization without requiring a real backend.
+This project is a full-stack Node.js/Express backend and React frontend for uploading, searching, and managing CSV data with secure authentication, API key management, and a modern dashboard.
 
 ## Features
 
-- **Mock Authentication**: Secure login/logout flow with password changes (simulated).
-- **CSV Upload & Parsing**: Users can upload their own CSV files, which are parsed and stored locally in the browser.
-- **API Simulation**:
-  - **API Key Generation**: Generate a unique, mock API key to "secure" the API endpoint.
-  - **API Documentation**: A dedicated page explaining how to use the simulated API.
-  - **API Testing**: An interface to make test "calls" to the local data.
-- **Audit Logging**: All significant actions (login, logout, CSV upload, API calls) are timestamped and logged. Logs can be exported to a local file.
-- **Usage Dashboard**: A visual dashboard with charts from `recharts` to display API usage statistics derived from the audit log.
-- **Persistent State**: The application uses the browser's `localStorage` to persist all data, ensuring nothing is lost on page refresh or browser restart.
-- **Fully Responsive**: Modern UI that works seamlessly on desktop and mobile devices.
+- **Persistent Authentication**: Secure login/logout flow with password changes, stored in `server/chest.txt` and persistent across restarts.
+- **CSV Upload & Parsing**: Upload CSV files via the web UI or API; data is stored on disk in NDJSON format.
+- **API Key Management**: Generate, rotate, and use API keys for secure access to all endpoints.
+- **API Documentation**: See [`APIFunctions.md`](./APIFunctions.md) for full API details, parameters, and examples.
+- **Audit Logging**: All API requests are logged to `server/api-requests.ndjson` with timestamp, IP, user agent, and token.
+- **Usage Dashboard**: Modern dashboard with charts and a sortable/filterable log table.
+- **Persistent State**: All data is stored on disk in the `server/` directory and survives server restarts.
+- **Fully Responsive**: Modern UI for desktop and mobile.
 
 ## Tech Stack
 
-- **React 18**: For building the user interface.
-- **TypeScript**: For type safety and improved developer experience.
-- **Tailwind CSS**: For utility-first styling and rapid UI development.
-- **Recharts**: For creating beautiful and responsive charts.
-- **Heroicons**: For high-quality SVG icons.
+- **Node.js + Express**: Backend API server
+- **React 18 + Vite**: Frontend
+- **TypeScript**: Type safety
+- **Tailwind CSS**: Styling
+- **Recharts**: Charts
+- **bcrypt**: Secure password hashing
 
 ---
 
-## Data Persistence (Current Browser-Based Method)
+## API Request Logging (NDJSON)
 
-**This application is designed to retain all your data automatically.** There are no extra steps you need to take to save your work.
+All API requests are logged by the backend to `server/api-requests.ndjson` in [NDJSON](http://ndjson.org/) format (one JSON object per line). Each log entry includes:
 
-All data, including your session, uploaded CSV file, generated API key, audit logs, and custom password, is stored directly in your web browser's `localStorage`.
+- `timestamp`: ISO date/time
+- `method`: HTTP method
+- `path`: Request path
+- `status`: HTTP status code
+- `durationMs`: Request duration in ms
+- `ip`: Source IP address
+- `userAgent`: User agent string
+- `apiToken`: Masked API token (first 4, last 4 chars)
 
-### How it Works:
-- **Automatic Saving**: Every action you take (like generating an API key, uploading a file, or making an API call) is immediately saved.
-- **Persistence on Refresh/Restart**: Because the data is in `localStorage`, it persists even if you refresh the page, close the browser tab, or restart your computer. When you reopen the application, it will load all of your previous data exactly as you left it.
+Example log line:
+```json
+{"timestamp":"2025-11-21T02:30:00.000Z","method":"POST","path":"/api/lookup","status":200,"durationMs":12,"ip":"127.0.0.1","userAgent":"curl/8.0.1","apiToken":"csv-...abcd"}
+```
 
-This approach provides a robust, single-user experience without the need for a backend database.
+**Troubleshooting:**
+- If you get 401/403 errors, check the log for the masked received/expected API tokens (see server logs for details).
+- API keys are normalized (trimmed, no newlines) before comparison.
+- For rate limit errors (429), wait a minute before retrying `/api/lookup`.
 
 ---
 
-## Transitioning to an On-Premise Server with a Database (Conceptual Guide)
+## Password Persistence and Reset
 
-While this application runs entirely in the browser, it's structured to be easily adaptable to a true on-premise server environment with a backend (e.g., using Node.js/Express, Python/Flask) and a persistent database like PostgreSQL.
+The admin password is stored in `server/chest.txt` and persists across server restarts. If you forget the password, you can manually reset it:
 
-For detailed instructions on installing and setting up a PostgreSQL database for this application, please see the **[DATABASE.md](DATABASE.md)** file.
+- Stop the server.
+- Edit or delete `server/chest.txt`.
+- If deleted, the next server start will reset the password to the default: `password`.
 
-### How it Would Work:
+You can also change the password via the `/api/change-password` endpoint (requires the current password).
 
-The core change is to replace every `localStorage` call in the frontend with an API call to a backend server. The server would then handle all logic and communication with the PostgreSQL database.
+---
 
-1.  **User Authentication & Password Storage**:
-    *   **Current**: Password is in `localStorage`.
-    *   **With Backend**: The `users` table in PostgreSQL would store a *hashed* version of the admin password. The login form would send credentials to a `/api/login` endpoint. The backend would hash the submitted password and compare it to the one in the database.
+## Data Persistence
 
-2.  **CSV Data Storage**:
-    *   **Current**: CSV JSON is in `localStorage`.
-    *   **With Backend**: When a user uploads a CSV, the file would be sent to a `/api/upload` endpoint. The backend would parse the CSV and insert each row into a dedicated `csv_data` table in PostgreSQL. API calls to fetch or search data would query this table.
+All data retention is performed by the backend server and filesystem. Uploaded CSVs and searchable NDJSON are stored under `server/` so data is durable across page reloads and server restarts.
 
-3.  **Audit Logs Storage**:
-    *   **Current**: Logs are an array in `localStorage`.
-    *   **With Backend**: Every action in the frontend would trigger a request to a `/api/log` endpoint (e.g., `POST /api/log` with `{ action: 'LOGIN', ... }`). The backend would then insert a new entry into the `audit_logs` table in the database. The Audit Log page would fetch its data from this table.
+---
 
-4.  **API Key Storage**:
+## API Reference
+
+See [`APIFunctions.md`](./APIFunctions.md) for a full list of endpoints, authentication, and example requests/responses.
+
+---
+
+## Installation & Usage
+
+See [`INSTALLATION.md`](./INSTALLATION.md) for setup, environment variables, and running instructions.
+
+---
+
+## License
+
+MIT
     *   **Current**: API Key is a string in `localStorage`.
     *   **With Backend**: The API key would be stored in a `configurations` table in the database or in a secure server-side environment file. The backend would validate incoming API requests against this stored key.
 

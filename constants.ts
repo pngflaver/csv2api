@@ -8,5 +8,5 @@ export const LOCAL_STORAGE_CSV_FILE_INFO = 'csv_api_file_info';
 export enum View {
   DASHBOARD = 'DASHBOARD',
   API_DOCS = 'API_DOCS',
-  AUDIT_LOG = 'AUDIT_LOG',
+  // AUDIT_LOG = 'AUDIT_LOG',
 }

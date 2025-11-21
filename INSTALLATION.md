@@ -1,53 +1,103 @@
 
+## API Response Changes
+
+The `/api/lookup` endpoint now returns only the HTTP status code and the date/time when the data was last uploaded. The date is stored in `server/last-upload.txt` and is updated every time `/api/upload` succeeds.
+
+**Example response:**
+```
+{
+	"status": 200,
+	"lastUpload": "2025-11-21T02:30:00.000Z"
+}
+```
+
+See `apifunctions.md` for full API documentation and examples.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Installation Guide
 
-This project is a standard React application built with Vite. To get it running locally, you'll need Node.js and npm (or a compatible package manager like Yarn or pnpm) installed on your machine.
+This project is a full-stack Node.js/Express backend and React frontend. You will need Node.js and npm installed.
 
-## Step 1: Set up the Project
+## 1. Clone the Project
 
-First, ensure you have all the project files in a single directory.
+Clone or download all project files into a single directory.
 
-## Step 2: Install Dependencies
+## 2. Install Dependencies
 
-Open your terminal, navigate to the project's root directory, and run the following command to install the necessary packages defined in `package.json`:
+Open your terminal, navigate to the project root, and run:
 
 ```bash
 npm install
+npm install bcrypt
 ```
 
-This command will download and install React, TypeScript, Tailwind CSS, Recharts, and other required libraries into your `node_modules` folder.
+This will install all backend and frontend dependencies, including bcrypt for secure password hashing.
 
-## Step 3: Configure Environment Variables
+## 3. Run the Backend API Server
 
-This application uses an environment variable for the mock API key. Although it's a mock key and not a real secret, it's good practice to use environment variables.
+Start the backend server (Node.js/Express):
 
-Create a file named `.env` in the root of your project and add the following line:
-
+```bash
+npm run start:api
 ```
-VITE_API_KEY=your-secret-api-key
-```
-*Note: In a real application, ensure `.env` is listed in your `.gitignore` file to prevent committing secrets.*
 
-For the purpose of this simulation, the `API_KEY` is not used for Gemini but is part of the mock API server functionality.
+The API server will start on `http://localhost:3001` by default.
 
-## Step 4: Run the Development Server
+## 4. Run the Frontend (React)
 
-Once the dependencies are installed, you can start the local development server with this command:
+In a separate terminal, start the React frontend:
 
 ```bash
 npm run dev
 ```
 
-This will start the Vite development server, and you should see output in your terminal indicating the server is running, typically on `http://localhost:5173`.
+The frontend will start on `http://localhost:5173` (or similar).
 
-Open your web browser and navigate to the provided URL to see the application live. The server supports Hot Module Replacement (HMR), so any changes you make to the source code will be reflected in the browser almost instantly without a full page reload.
+## 5. Default Credentials
+
+- **Username:** `bruce`
+- **Password:** `password` (change via `/api/change-password` or by editing `server/chest.txt`)
+
+## 6. API Documentation
+
+See [`APIFunctions.md`](./APIFunctions.md) for all endpoints, authentication, and usage examples.
+
+---
 
 ## Building for Production
 
-When you are ready to deploy the application, you can create an optimized production build:
+To build the frontend for production:
 
 ```bash
 npm run build
 ```
 
-This command will compile and bundle your code into a `dist` directory. You can then serve the contents of this directory with any static file server.
+This will output the production build to the `dist` directory. Serve it with any static file server.
+
+---
+
+## Troubleshooting
+
+- If you forget the password, delete `server/chest.txt` and restart the server to reset to the default password.
+- All data is stored in the `server/` directory and persists across restarts.
