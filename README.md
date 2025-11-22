@@ -21,9 +21,6 @@ It is not to be sold, redistributed, or used for commercial resale.
 By using this tool, you acknowledge that you understand and accept these terms, and agree to use this tool at your own risk.
 The creators accept no liability for any misuse or damages arising from its use.
 
-Contact: [flavius@narokobi.tech](mailto:flavius@narokobi.tech)
-Phone: +675 8220 8603
-
 ## Security Measures
 
 This project includes several security features to protect your data and API:
@@ -171,3 +168,4 @@ MIT
     *   **With Backend**: The API key would be stored in a `configurations` table in the database or in a secure server-side environment file. The backend would validate incoming API requests against this stored key.
 
 See `INSTALLATION.md` for setup instructions for the current application.
+
