@@ -1,3 +1,29 @@
+---
+## Midnight Bridge v1.0.0
+
+### Release Notes
+
+**v1.0.0 Highlights:**
+- Initial public release of CSV API Server & Dashboard
+- Secure authentication and password management
+- API key management and audit logging
+- CSV upload, search, and lookup endpoints
+- Modern React dashboard with charts and log table
+- Easy setup scripts for development and production
+- No external AI or template dependencies
+
+---
+## Disclaimer & Indemnity
+
+This build is provided free of charge as a tool to help businesses and departments become API ready.
+It is not to be sold, redistributed, or used for commercial resale.
+
+By using this tool, you acknowledge that you understand and accept these terms, and agree to use this tool at your own risk.
+The creators accept no liability for any misuse or damages arising from its use.
+
+Contact: [flavius@narokobi.tech](mailto:flavius@narokobi.tech)
+Phone: +675 8220 8603
+
 ## Security Measures
 
 This project includes several security features to protect your data and API:
@@ -121,7 +147,20 @@ See [`APIFunctions.md`](./APIFunctions.md) for a full list of endpoints, authent
 
 ## Installation & Usage
 
+
 See [`INSTALLATION.md`](./INSTALLATION.md) for setup, environment variables, and running instructions.
+
+---
+
+## Scripts
+
+The `./scripts` directory contains helper scripts for starting and deploying the app:
+
+- **dev-start.sh**: Installs dependencies and starts both the backend API server and frontend (React + Vite) in development mode. Use this after cloning the repo to quickly spin up the app for local development.
+
+- **prod-setup.sh**: Installs dependencies, builds the frontend for production, serves the static files, and runs the backend API server with PM2 for reliability. Use this to set up and run the app in a production environment.
+
+Both scripts are Bash scripts. On Windows, you can run them using WSL or Git Bash.
 
 ---
 
